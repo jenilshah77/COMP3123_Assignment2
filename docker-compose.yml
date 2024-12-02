@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  # MongoDB container
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data/db:/data/db
+    restart: always
+
+  # Backend container (Node.js)
+  backend:
+    build:
+      context: ./backend # Adjust path to your backend directory
+    container_name: assignment2-backend
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/assignment2db
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo
+    restart: always
+
+  # Frontend container (React)
+  frontend:
+    build:
+      context: ./frontend # Adjust path to your frontend directory
+    container_name: assignment2-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: always
